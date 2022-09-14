@@ -3,28 +3,117 @@
 # Perform the operaration on the two numbers
 # Output the result
 
-Kernel.puts('Welcome to Calculator!')
+require 'yaml'
+MESSAGES = YAML.load_file('2_small_programs/calculator_messages.yml')
 
-Kernel.puts("What's the first number?")
-number1 = Kernel.gets().chomp()
-Kernel.puts("The first number is #{number1}")
+puts MESSAGES.inspect
 
-Kernel.puts("What's the first number?")
-number2 = Kernel.gets().chomp()
-Kernel.puts("The second number is #{number2}")
+# def prompt(message)
+#   Kernel.puts "=> #{message}"
+# end
 
-Kernel.puts('What operation would you like to perform on these numbers? 1) add 2) subtract 3) multiply 4) divide')
-operator = Kernel.gets().chomp()
+# def valid_number?(number)
+#   !number.to_i.zero?
+#   # number.to_i.is_a? Numeric
+#   # (number.to_i.is_a? Integer) || (number.to_f.is_a? Float)
+# end
 
-if operator == '1'
-  result = number1.to_i() + number2.to_i()
-elsif operator == '2'
-  result = number1.to_i() - number2.to_i()
-elsif operator == '3'
-  result = number1.to_i() * number2.to_i()
-elsif operator == '4'
-  result = number1.to_f() / number2.to_f()
-end
+# def operation_to_message(op)
+#   string_op = case op
+#               when '1'
+#                 'Adding'
+#               when '2'
+#                 'Subtracting'
+#               when '3'
+#                 'Multiplying'
+#               when '4'
+#                 'Dividing'
+#               end
+#   string_op
+# end
+
+# prompt 'Welcome to Calculator!  Please enter your name:'
+
+# name = ''
+# loop do
+#   name = gets.chomp
+
+#   if name.empty?
+#     prompt "Make sure to use a valid name"
+#   else
+#     break
+#   end
+# end
+
+# prompt "Hi #{name}!"
+
+# loop do # main loop
+#   number1 = ''
+#   loop do
+#     prompt "What's the first number?"
+#     number1 = gets.chomp
+
+#     if valid_number? number1
+#       break
+#     else
+#       prompt "Hmm .. that doesn't look like a valid number!"
+#     end
+#   end
+
+#   number2 = ''
+#   loop do
+#     prompt "What's the second number?"
+#     number2 = gets.chomp
+
+#     if valid_number? number2
+#       break
+#     else
+#       prompt "Hmm .. that doesn't look like a valid number!"
+#     end
+#   end
+
+#   # This delimiter can be anything. Must match closing one.
+#   operator_prompt = <<-MSG
+#     What operation would you like to perform on these numbers?
+#     1) add 
+#     2) subtract 
+#     3) multiply 
+#     4) divide
+#   MSG
+#   prompt operator_prompt
+
+#   operator = ''
+#   loop do
+#     operator = gets.chomp
+#     if %w(1 2 3 4).include? operator
+#       break
+#     else
+#       prompt "Must choose 1, 2, 3, or 4"
+#     end
+#   end
+
+#   prompt "#{operation_to_message(operator)} the two numbers..."
+
+#   result = case operator
+#            when '1'
+#              number1.to_i + number2.to_i
+#            when '2'
+#              number1.to_i - number2.to_i
+#            when '3'
+#              number1.to_i * number2.to_i
+#            when '4'
+#              number1.to_f / number2.to_f
+#            end
+
+#   prompt "The result is #{result}"
+
+#   prompt "Do you want to perform another calculation? (Y to calculate again)"
+#   answer = gets.chomp
+#   break unless answer.downcase.start_with? 'y'
+# end
+
+# prompt "Thank you for using the calculator.  Goodbye!"
+
 
 
 # puts "\nPlease enter two numbers separated by a space: "
