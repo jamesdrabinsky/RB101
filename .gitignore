@@ -58,3 +58,4 @@ build-iPhoneSimulator/
 # Custome
 test.*
 */**.jpeg
+*/**.ipynb
