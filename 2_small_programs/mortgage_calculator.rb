@@ -1,18 +1,18 @@
-# Ask the user for the loan amount
-# Ask the user for the Annual Percentage Rate (APR)
-# Ask the user for the loan duration
-# Use the above information to calculate:
-# the monthly interest rate
-# the loan duration in months
-# the monthly payment
+# Ask the user for the loan amount, APR and loan duration
+# Calculate:the monthly interest rate, loan duration and monthly payment
 
 require 'yaml'
 require './mortgage_module.rb'
 MESSAGES = YAML.load_file('./mortgage_calculator.yml')
 
-prompt MESSAGES['intro_msg']
-
-# Add name prompt and validation
+name = ''
+loop do
+  prompt MESSAGES['intro_msg']
+  name = gets.chomp
+  break if name? name
+  prompt MESSAGES['name']['error_msg']
+end
+prompt MESSAGES['name']['post_msg'] % { placeholder: name }
 
 answer = ''
 loop do
@@ -41,11 +41,10 @@ loop do
     method(:month_year?)
   )
 
-  # Abstract into final method?
   final_hash_update user_values
   prompt MESSAGES['monthly_payment']['intro_msg']
   display_summary user_values
-  prompt MESSAGES['monthly_payment']['post_msg']
+  prompt MESSAGES['monthly_payment']['post_msg'] % { placeholder: name }
   answer = confirm_entry
   break if answer == '2'
 end

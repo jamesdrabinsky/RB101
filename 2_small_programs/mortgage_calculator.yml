@@ -1,9 +1,9 @@
-intro_msg: 'Please use the Mortgage Loan Calculator to estimate your monthly mortage payments.'
-outro_msg: "Thanks and have a nice day!"
+intro_msg: "Use the Mortgage Loan Calculator to estimate your monthly mortage payments.\nPlease enter your name:"
+outro_msg: "Thanks %{placeholder}. Have a nice day!"
 
 name:
-  intro_msg: ""
-  error_msg: ""
+  error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
+  post_msg: "Thank you, %{placeholder}.  Let's get started."
 
 loan_amount:
   intro_msg: 'Please provide the loan amount:'
