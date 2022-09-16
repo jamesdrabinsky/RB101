@@ -44,9 +44,9 @@ loop do
   final_hash_update user_values
   prompt MESSAGES['monthly_payment']['intro_msg']
   display_summary user_values
-  prompt MESSAGES['monthly_payment']['post_msg'] % { placeholder: name }
+  prompt MESSAGES['monthly_payment']['post_msg']
   answer = confirm_entry
   break if answer == '2'
 end
 
-prompt MESSAGES['outro_msg']
+prompt MESSAGES['outro_msg'] % { placeholder: name }
