@@ -21,7 +21,7 @@ loan_duration:
   intro_msg: |
     Please provide the loan duration in years and months separated by a space.
     Example: 20 6 for 20 years and 6 months or 30 10 for 30 years and 10 months:
-  error_msg: "Sorry, that is not a valid loan duration.\nPlease provide the loan duration:"
+  error_msg: "Sorry, that is not a valid loan duration.\nPlease provide the loan duration again:"
   post_msg:  "Thank you. Please confirm that your loan duration is %{placeholder} years and %{placeholder2} months\n1) Yes\n2) No"
 
 monthly_payment:
