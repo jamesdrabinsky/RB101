@@ -12,44 +12,41 @@ MESSAGES = YAML.load_file('./mortgage_calculator.yml')
 
 prompt MESSAGES['intro_msg']
 
+# Add name prompt and validation
+
 answer = ''
-loop do 
+loop do
   user_values = {}
 
-  full_validation(
+  two_step_validation(
     MESSAGES['loan_amount']['intro_msg'],
     MESSAGES['loan_amount']['error_msg'],
     MESSAGES['loan_amount']['post_msg'],
     user_values,
     'loan_amount'
   )
-  full_validation(
+  two_step_validation(
     MESSAGES['monthly_interest_rate']['intro_msg'],
     MESSAGES['monthly_interest_rate']['error_msg'],
     MESSAGES['monthly_interest_rate']['post_msg'],
     user_values,
     'monthly_interest_rate'
   )
-  full_validation(
+  two_step_validation(
     MESSAGES['loan_duration']['intro_msg'],
     MESSAGES['loan_duration']['error_msg'],
     MESSAGES['loan_duration']['post_msg'],
     user_values,
-    'loan_duration'
+    'loan_duration',
+    method(:month_year?)
   )
 
-  monthly_payment = mortgage_formula(*user_values.each_value)
-  update_hash(user_values, 'monthly_payment', monthly_payment)
-  print user_values
-
-  loop do
-    prompt MESSAGES['monthly_payment']['intro_msg']
-    summarize(user_values)
-    prompt MESSAGES['monthly_payment']['post_msg']
-    answer = gets.chomp
-    break if !answer.empty? && %w(1 2).include?(answer)
-    prompt 'Invalid entry. To confirm, please enter either 1 (yes) or 2 (no):'
-  end
+  # Abstract into final method?
+  final_hash_update user_values
+  prompt MESSAGES['monthly_payment']['intro_msg']
+  display_summary user_values
+  prompt MESSAGES['monthly_payment']['post_msg']
+  answer = confirm_entry
   break if answer == '2'
 end
 

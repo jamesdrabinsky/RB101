@@ -1,6 +1,10 @@
 intro_msg: 'Please use the Mortgage Loan Calculator to estimate your monthly mortage payments.'
 outro_msg: "Thanks and have a nice day!"
 
+name:
+  intro_msg: ""
+  error_msg: ""
+
 loan_amount:
   intro_msg: 'Please provide the loan amount:'
   error_msg: "Sorry, that is not a valid dollar amount.\nPlease provide the loan amount again: "
