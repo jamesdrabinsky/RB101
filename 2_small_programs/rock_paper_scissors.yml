@@ -3,27 +3,21 @@ outro_msg: "Thanks %{placeholder}. Have a nice day!"
 
 name:
   error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
-  post_msg: "Thank you, %{placeholder}.  Let's get started."
+  post_msg: |
+    Welcome, %{placeholder}.  You will be playing a match of RPSSL against the computer.
+    The first to 3 wins ends the match and becomes the grand winner!  
+    Let's get started and good luck!"
 
-loan_amount:
-  intro_msg: 'Please provide the loan amount:'
-  error_msg: "Sorry, that is not a valid dollar amount.\nPlease provide the loan amount again: "
-  post_msg:  "Thank you. Please confirm that your loan amount is $%{placeholder}\n1) Yes\n2) No"
-  
-monthly_interest_rate:
+choice:
   intro_msg: |
-   Please provide the Annual Percentage Rate.
-   Example: 5 for 5% or 10.5 for 10.5%:
-  error_msg: "Sorry, that is not a valid interest rate.\nPlease provide the Annual Percentage Rate again:"
-  post_msg:  "Thank you. Please confirm that your Annual Percentage Rate is %{placeholder}%\n1) Yes\n2) No"
-
-loan_duration:
-  intro_msg: |
-    Please provide the loan duration in years and months separated by a space.
-    Example: 20 6 for 20 years and 6 months or 30 10 for 30 years and 10 months:
-  error_msg: "Sorry, that is not a valid loan duration.\nPlease provide the loan duration again:"
-  post_msg:  "Thank you. Please confirm that your loan duration is %{placeholder} years and %{placeholder2} months\n1) Yes\n2) No"
-
-monthly_payment:
-  intro_msg: "Thank you for using the Mortgage Loan Calculator.  Below is a summary of your mortgage loan details:"
-  post_msg: "Would you like to calculate another loan?\n1) Yes\n2) No"
+    Please choose one from the following options:
+    r   (for Rock)
+    p   (for paper)
+    sc  (for scissors)
+    l   (for lizard)
+    sp  (for spock)
+  error_msg: "Sorry, %{placeholder} is not a valid choice.\nPlease choose again from the following options: "
+  score_msg: |
+    The match score is now
+        %{player}:  %{player_score}
+        computer:   %{computer_score}
