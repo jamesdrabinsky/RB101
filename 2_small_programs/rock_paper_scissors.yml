@@ -1,0 +1,29 @@
+intro_msg: "Welcome to a new game of Rock Paper Scissors Spock Lizard.  What's your name?:"
+outro_msg: "Thanks %{placeholder}. Have a nice day!"
+
+name:
+  error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
+  post_msg: "Thank you, %{placeholder}.  Let's get started."
+
+loan_amount:
+  intro_msg: 'Please provide the loan amount:'
+  error_msg: "Sorry, that is not a valid dollar amount.\nPlease provide the loan amount again: "
+  post_msg:  "Thank you. Please confirm that your loan amount is $%{placeholder}\n1) Yes\n2) No"
+  
+monthly_interest_rate:
+  intro_msg: |
+   Please provide the Annual Percentage Rate.
+   Example: 5 for 5% or 10.5 for 10.5%:
+  error_msg: "Sorry, that is not a valid interest rate.\nPlease provide the Annual Percentage Rate again:"
+  post_msg:  "Thank you. Please confirm that your Annual Percentage Rate is %{placeholder}%\n1) Yes\n2) No"
+
+loan_duration:
+  intro_msg: |
+    Please provide the loan duration in years and months separated by a space.
+    Example: 20 6 for 20 years and 6 months or 30 10 for 30 years and 10 months:
+  error_msg: "Sorry, that is not a valid loan duration.\nPlease provide the loan duration again:"
+  post_msg:  "Thank you. Please confirm that your loan duration is %{placeholder} years and %{placeholder2} months\n1) Yes\n2) No"
+
+monthly_payment:
+  intro_msg: "Thank you for using the Mortgage Loan Calculator.  Below is a summary of your mortgage loan details:"
+  post_msg: "Would you like to calculate another loan?\n1) Yes\n2) No"

@@ -7,7 +7,7 @@ require 'yaml'
 MESSAGES = YAML.load_file('2_small_programs/calculator_messages.yml')
 
 def prompt(message)
-  Kernel.puts "=> #{message}" 
+  Kernel.puts "=> #{message}"
 end
 
 def valid_number?(number)
@@ -111,8 +111,6 @@ loop do # main loop
 end
 
 prompt "Thank you for using the calculator.  Goodbye!"
-
-
 
 # puts "\nPlease enter two numbers separated by a space: "
 # num1, num2 = gets.chomp.split(' ').map(&:to_i)
