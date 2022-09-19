@@ -1,12 +1,20 @@
 intro_msg: "Welcome to a new game of Rock Paper Scissors Spock Lizard.  What's your name?:"
-outro_msg: "Thanks %{placeholder}. Have a nice day!"
+final_score_msg: |
+    The final match score is
+        %{player}:  %{player_score}
+        Computer:   %{computer_score}
+play_again: 
+  player: "%{player_name}, want to play again and continue your win streak?\n1) Yes\n2) No"
+  computer: "%{player_name}, tough luck in the last game.  Want to play again?\n1) Yes\n2) No"
+  error_msg: "Sorry, %{placeholder} is not a valid choice."
+outro_msg: "Thanks for playing, %{player_name}. Have a nice day!"
 
 name:
   error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
   post_msg: |
     Welcome, %{placeholder}.  You will be playing a match of RPSSL against the computer.
     The first to 3 wins ends the match and becomes the grand winner!  
-    Let's get started and good luck!"
+    Let's get started and good luck!
 
 choice:
   intro_msg: |
@@ -16,8 +24,19 @@ choice:
     sc  (for scissors)
     l   (for lizard)
     sp  (for spock)
-  error_msg: "Sorry, %{placeholder} is not a valid choice.\nPlease choose again from the following options: "
-  score_msg: |
+  error_msg: "Sorry, %{placeholder} is not a valid choice."
+  post_msg: "You chose %{first} and the computer chose %{second}."
+
+result:
+  player: 
+    update: "%{player} beats %{computer}. You won!"
+    final:  "Well done, %{player_name}. You are the grand winner!"
+  computer: 
+    update: "%{computer} beats %{player}. The computer won!"
+    final:  "Sorry %{player_name}, you lost!"
+  tie: 
+    update: "Its a tie!"
+  updated_score_msg: |
     The match score is now
         %{player}:  %{player_score}
-        computer:   %{computer_score}
+        Computer:   %{computer_score}

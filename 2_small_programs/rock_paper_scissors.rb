@@ -11,9 +11,8 @@ RPSSL = {
   lizard: { abbrev: 'l', beats: ['spock', 'paper'] }
 }
 
-win_tracker = { player: 0, computer: 0 }
-
 def prompt(message)
+  sleep(1.5)
   puts "\n=> #{message}"
 end
 
@@ -25,45 +24,71 @@ def valid_choice?(choice)
   VALID_CHOICES.include?(choice)
 end
 
-def get_full_name(abbrev)
+def convert_to_full(abbrev)
   RPSSL.find { |_, v| v[:abbrev] == abbrev }.first
 end
 
-def wins?(choice1, choice2)
-  RPSSL[choice1][:beats].include?(choice2.to_s)
+def get_full_names(first, second)
+  [first, second].map { |abbrev| convert_to_full(abbrev) }
+end
+
+def wins?(first, second)
+  RPSSL[first][:beats].include?(second.to_s)
 end
 
 def add_win(hash, winner)
   hash[winner] += 1
 end
 
-def display_results(player, computer, hash)
-  player_full, computer_full = [player, computer].map do |abbrev|
-    get_full_name(abbrev)
+def get_scenario(player, computer)
+  if wins?(player, computer)
+    'player'
+  elsif wins?(computer, player)
+    'computer'
+  else 'tie'
   end
+end
 
-  if wins?(player_full, computer_full)
-    add_win(hash, :player)
-    prompt "Nice, you won!"
-  elsif wins?(computer_full, player_full)
-    add_win(hash, :computer)
-    prompt "Shucks, the computer won!"
-  else
-    prompt "It's a tie!"
-  end
+def display_result(player, computer)
+  prompt MESSAGES['choice']['post_msg'] % { first: player, second: computer }
+  result = get_scenario(player, computer)
+  prompt MESSAGES['result'][result]['update'] % {
+    player: player,
+    computer: computer
+  }
+end
+
+def update_hash(player, computer, hash)
+  result = get_scenario(player, computer).to_sym
+  add_win(hash, result) if hash.include?(result)
 end
 
 def three_wins?(hash)
-  !hash.select { |_, v| v == 3 }.empty?
+  hash.each_value.any? { |v| v == 3 }
+end
+
+def hash_winner(hash)
+  (hash.find { |_, v| v == 3 }.first).to_s
 end
 
 def display_score(hash, player_name)
-  prompt MESSAGES['choice']['score_msg'] % {
+  prompt MESSAGES['result']['updated_score_msg'] % {
     player: player_name,
     player_score: hash[:player],
-    computer_score: hash[:computer],
+    computer_score: hash[:computer]
   }
 end
+
+def display_final_score(hash, winner, player_name)
+  prompt MESSAGES['result'][winner]['final'] % { player_name: player_name }
+  prompt MESSAGES['final_score_msg'] % {
+    player: player_name,
+    player_score: hash[:player],
+    computer_score: hash[:computer]
+  }
+end
+
+##############################################################
 
 prompt MESSAGES['intro_msg']
 
@@ -75,41 +100,39 @@ loop do
 end
 prompt MESSAGES['name']['post_msg'] % { placeholder: name }
 
-choice = ''
+play_again = ''
+winner = ''
 loop do
+  win_tracker = { player: 0, computer: 0 }
+  choice = ''
   loop do
-    prompt MESSAGES['choice']['intro_msg']
-    choice = gets.chomp.downcase
-    break if valid_choice? choice
-    prompt MESSAGES['choice']['error_msg'] % { placeholder: choice }
+    loop do
+      prompt MESSAGES['choice']['intro_msg']
+      choice = gets.chomp.downcase
+      break if valid_choice? choice
+      prompt MESSAGES['choice']['error_msg'] % { placeholder: choice }
+    end
+    computer_choice = VALID_CHOICES.sample
+    player, computer = get_full_names(choice, computer_choice)
+    display_result(player, computer)
+    update_hash(player, computer, win_tracker)
+    if three_wins? win_tracker
+      winner = hash_winner win_tracker
+      break
+    end
+    display_score(win_tracker, name)
+    sleep(2)
+    system('clear')
   end
-  computer_choice = VALID_CHOICES.sample
-  display_results(choice, computer_choice, win_tracker)
-  break if three_wins? win_tracker
-  display_score(win_tracker, name)
+  display_final_score(win_tracker, winner, name)
+  loop do
+    prompt MESSAGES['play_again'][winner] % { player_name: name }
+    play_again = gets.chomp
+    break if %w(1 2).include? play_again
+    prompt MESSAGES['play_again']['error_msg'] % { placeholder: play_again }
+  end
+  break if play_again == '2'
+  system('clear')
 end
 
-MESSAGE['final_score']
-
-
-# loop do
-#   choice = ''
-#   loop do
-#     prompt "Choose one: #{VALID_CHOICES.join(', ')}"  
-#     choice = gets.chomp
-#     break if VALID_CHOICES.include?(choice)
-
-#     prompt "That's not a valid choice."
-#   end
-
-#   computer_choice = VALID_CHOICES.sample
-
-#   puts "You chose #{choice}; Computer chose #{computer_choice}"
-
-#   display_results(choice, computer_choice)
-#   prompt 'Do you want to play again?'
-#   answer = gets.chomp
-#   break unless answer.downcase.start_with?('y')
-# end
-
-# prompt 'Thank you for playing.  Good Bye!'
+prompt MESSAGES['outro_msg'] % { player_name: name }
