@@ -42,6 +42,10 @@ def digit_list(number)
 end
 
 def digit_list(number)
+  number.digits.reverse
+end
+
+def digit_list(number)
   digits = []
   loop do
     number, remainder = number.divmod(10)
@@ -59,3 +63,6 @@ print "\n"
 print digit_list(375290)
 print "\n"
 print digit_list(444)
+
+
+444.digits.reverse
