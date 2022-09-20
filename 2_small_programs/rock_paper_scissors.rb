@@ -17,11 +17,12 @@ def prompt(message)
 end
 
 def name?(name)
+  name.strip!
   (!name.empty?) && (name.match?(/^[[:alpha:][:blank:]]+$/))
 end
 
 def valid_choice?(choice)
-  VALID_CHOICES.include?(choice)
+  VALID_CHOICES.include? choice
 end
 
 def convert_to_full(abbrev)
@@ -33,7 +34,7 @@ def get_full_names(first, second)
 end
 
 def wins?(first, second)
-  RPSSL[first][:beats].include?(second.to_s)
+  RPSSL[first][:beats].include? second.to_s
 end
 
 def add_win(hash, winner)
@@ -50,17 +51,17 @@ def get_scenario(player, computer)
 end
 
 def display_result(player, computer)
-  prompt MESSAGES['choice']['post_msg'] % { first: player, second: computer }
+  prompt format(MESSAGES['choice']['post_msg'],
+                { first: player, second: computer })
   result = get_scenario(player, computer)
-  prompt MESSAGES['result'][result]['update'] % {
-    player: player,
-    computer: computer
-  }
+  prompt format(MESSAGES['result'][result]['update'],
+                { player: player,
+                  computer: computer })
 end
 
 def update_hash(player, computer, hash)
   result = get_scenario(player, computer).to_sym
-  add_win(hash, result) if hash.include?(result)
+  add_win(hash, result) if hash.include? result
 end
 
 def three_wins?(hash)
@@ -72,20 +73,19 @@ def hash_winner(hash)
 end
 
 def display_score(hash, player_name)
-  prompt MESSAGES['result']['updated_score_msg'] % {
-    player: player_name,
-    player_score: hash[:player],
-    computer_score: hash[:computer]
-  }
+  prompt format(MESSAGES['result']['updated_score_msg'],
+                { player: player_name,
+                  player_score: hash[:player],
+                  computer_score: hash[:computer] })
 end
 
 def display_final_score(hash, winner, player_name)
-  prompt MESSAGES['result'][winner]['final'] % { player_name: player_name }
-  prompt MESSAGES['final_score_msg'] % {
-    player: player_name,
-    player_score: hash[:player],
-    computer_score: hash[:computer]
-  }
+  prompt format(MESSAGES['result'][winner]['final'],
+                { player_name: player_name })
+  prompt format(MESSAGES['final_score_msg'],
+                { player: player_name,
+                  player_score: hash[:player],
+                  computer_score: hash[:computer] })
 end
 
 ##############################################################
@@ -98,7 +98,7 @@ loop do
   break if name?(name)
   prompt MESSAGES['name']['error_msg']
 end
-prompt MESSAGES['name']['post_msg'] % { placeholder: name }
+prompt format(MESSAGES['name']['post_msg'], { placeholder: name })
 
 play_again = ''
 winner = ''
@@ -110,7 +110,7 @@ loop do
       prompt MESSAGES['choice']['intro_msg']
       choice = gets.chomp.downcase
       break if valid_choice? choice
-      prompt MESSAGES['choice']['error_msg'] % { placeholder: choice }
+      prompt format(MESSAGES['choice']['error_msg'], { placeholder: choice })
     end
     computer_choice = VALID_CHOICES.sample
     player, computer = get_full_names(choice, computer_choice)
@@ -126,13 +126,14 @@ loop do
   end
   display_final_score(win_tracker, winner, name)
   loop do
-    prompt MESSAGES['play_again'][winner] % { player_name: name }
+    prompt format(MESSAGES['play_again'][winner], { player_name: name })
     play_again = gets.chomp
     break if %w(1 2).include? play_again
-    prompt MESSAGES['play_again']['error_msg'] % { placeholder: play_again }
+    prompt format(MESSAGES['play_again']['error_msg'],
+                  { placeholder: play_again })
   end
   break if play_again == '2'
   system('clear')
 end
 
-prompt MESSAGES['outro_msg'] % { player_name: name }
+prompt format(MESSAGES['outro_msg'], { player_name: name })
