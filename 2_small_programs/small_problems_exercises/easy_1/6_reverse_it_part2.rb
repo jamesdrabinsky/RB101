@@ -48,7 +48,7 @@ def reverse_words(words)
 end
 
 def reverse_words2(str)
-  str.split(' ').each { |word| word.reverse! if word.size >= 5 }.join(' ')
+  str.split.each { |word| word.reverse! if word.size >= 5 }.join(' ')
 end
 
 
