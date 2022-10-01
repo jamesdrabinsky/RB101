@@ -20,7 +20,7 @@ Is there any way to address this?
 # https://stackoverflow.com/questions/28545559/how-to-work-with-leading-zeros-in-integers
 
 def palindromic_number2?(number)
-  formatted_number = format('%o', number)
+  formatted_number = format('0%o', number)
   formatted_number == formatted_number.reverse
 end
 
