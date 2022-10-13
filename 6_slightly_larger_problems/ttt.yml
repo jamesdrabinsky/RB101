@@ -1,0 +1,33 @@
+intro_msg: "Before you start a new game of Tic Tac Toe, please enter name:"
+outro_msg: "Thanks %{placeholder}. Have a nice day!"
+
+name:
+  error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
+  post_msg: "Thank you, %{player}.  Good luck!"
+
+first_move_decision:
+  intro_msg: |
+    Do you want to choose who moves first or would you like to let the computer decide?
+    '%{player_letter}' for %{player_name}
+    'c' for Computer
+  error_msg: "Sorry, that is not a valid selection.  Please try again:"
+  
+first_move:
+  intro_msg: 
+    Choose who makes the first move
+    '%{player_letter}' for %{player_name}
+    'c' for Computer
+  player: 'Computer is giving you the first move!'
+  computer: 'Computer decided to move first!'
+  error_msg: "Sorry, that is not a valid selection.  Please try again:"
+
+loan_duration:
+  intro_msg: |
+    Please provide the loan duration in years and months separated by a space.
+    Example: 20 6 for 20 years and 6 months or 30 10 for 30 years and 10 months:
+  error_msg: "Sorry, that is not a valid loan duration.\nPlease provide the loan duration again:"
+  post_msg:  "Thank you. Please confirm that your loan duration is %{placeholder} years and %{placeholder2} months\n1) Yes\n2) No"
+
+monthly_payment:
+  intro_msg: "Thank you for using the Mortgage Loan Calculator.  Below is a summary of your mortgage loan details:"
+  post_msg: "Would you like to calculate another loan?\n1) Yes\n2) No"

@@ -76,3 +76,7 @@
   #   prompt "#{winner} is the first to 5 wins!"
   #   break
   # end
+
+  ############################################################################
+
+# brd.keys.select { |k| brd[k] == INITIAL_MARKER }

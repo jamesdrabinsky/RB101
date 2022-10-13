@@ -1,4 +1,6 @@
 require 'pry'
+require 'yaml'
+MESSAGES = YAML.load_file('./ttt.yml')
 
 INITIAL_MARKER =  ' '
 PLAYER_MARKER = 'X'
@@ -13,31 +15,60 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
+def clear(time = 1)
+  sleep(time)
+  system('clear')
+end
+
+def valid_choice?(choice, *options)
+  options.include?(choice)
+end
+
+def valid_name?(name)
+  name.match?(/^[A-Za-z]/)
+end
+
+def welcome
+  clear
+  prompt MESSAGES['intro_msg']
+  name = ''
+  loop do
+    name = gets.chomp.strip
+    if valid_name?(name)
+      prompt format(MESSAGES['name']['post_msg'], { player: name })
+      break
+    end
+    prompt MESSAGES['name']['error_msg']
+    clear
+  end
+  name
+end
+
 def winning_lines_list(dimension)
   size = dimension**2
   rows = [*(1..size).each_slice(dimension)]
   cols = rows.transpose
   diagonals = [rows, rows.map(&:reverse)].map do |arr|
-    arr.map.with_index { |arr, idx| arr[idx] }
+    arr.map.with_index { |sub_arr, idx| sub_arr[idx] }
   end
   [rows, cols, diagonals]
 end
 
 # rubocop:disable Metrics/AbcSize
 def display_board(brd)
-  system 'clear'
+  clear(1)
   puts "You're #{PLAYER_MARKER}. Computer is #{COMPUTER_MARKER}."
   # Add message for player here
   puts ""
-  puts "      |        |"
+  puts " 1    | 2      | 3"
   puts "   #{brd[1]}  |    #{brd[2]}   |  #{brd[3]}"
   puts "      |        |"
   puts "------+--------+------"
-  puts "      |        |"
+  puts " 4    | 5      | 6"
   puts "   #{brd[4]}  |    #{brd[5]}   |  #{brd[6]}"
   puts "      |        |"
   puts "------+--------+------"
-  puts "      |        |"
+  puts " 7    | 8      | 9"
   puts "   #{brd[7]}  |    #{brd[8]}   |  #{brd[9]}"
   puts "      |        |"
   puts ""
@@ -58,6 +89,39 @@ def joinor(arr, sep1 = ', ', sep2 = 'or')
   when 1 then arr[0]
   else "#{arr[0..-2].join(sep1)} #{sep2} #{arr[-1]}" 
   end
+end
+
+def first_move_decision(name)
+  clear
+  decider = ''
+  loop do
+    prompt format(MESSAGES['first_move_decision']['intro_msg'],
+                  { player_letter: name[0].downcase, player_name: name })
+    decider = gets.chomp.strip.downcase
+    break if valid_choice?(decider, name[0], 'c')
+    prompt MESSAGES['first_move_decision']['error_msg']
+    clear
+  end
+  decider
+end
+
+def first_move(decider, name)
+  clear
+  first_move = ''
+  loop do
+    if decider == name[0]
+      prompt format(MESSAGES['first_move']['intro_msg'],
+                    { player_letter: name[0].downcase, player_name: name })
+      first_move = gets.chomp.strip.downcase
+    else
+      first_move = [name[0], 'computer'].sample
+      first_move == name[0] ? MESSAGES['first_move']['player'] : MESSAGES['first_move']['computer']
+    end
+    break if valid_choice?(first_move, name[0], 'c')
+    prompt MESSAGES['first_move']['error_msg']
+    clear
+  end
+  first_move
 end
 
 def player_places_piece!(brd) # Destructive method
@@ -95,6 +159,7 @@ def computer_places_piece!(brd)
 end
 
 def place_piece!(brd, current_player)
+  sleep(1)
   if current_player == 'player'
     player_places_piece!(brd)
   else
@@ -104,41 +169,6 @@ end
 
 def alternate_player(current_player)
   current_player == 'player' ? 'computer' : 'player'
-end
-
-def valid_choice?(choice, *options)
-  options.include?(choice)
-end
-
-def first_move_decision
-  decider = ''
-  loop do
-    prompt 'Do you want to choose who moves first or would you like to let the computer decide? (player or computer)'
-    decider = gets.chomp.strip
-    break if valid_choice?(decider, 'player', 'computer')
-    prompt 'That is not a valid answer'
-  end
-  decider
-end
-
-def first_move(decider)
-  first_move = ''
-  loop do
-    if decider == 'player'
-      puts 'Choose who makes the first moves.  (player or computer)'
-      first_move = gets.chomp.strip
-    else
-      first_move = %w(player computer).sample
-      if first_move == 'player'
-        prompt 'Computer is giving you the first move!'
-      else
-        prompt 'Computer decided to move first!'
-      end
-    end
-    break if valid_choice?(first_move, 'player', 'computer')
-    prompt 'That is not a valid answer'
-  end
-  first_move
 end
 
 def board_full?(brd)
@@ -164,10 +194,9 @@ def add_win(winner, hsh)
   hsh[winner] += 1
 end
 
-def game_flow(brd)
-  decider = first_move_decision
-  current_player = first_move(decider)
-  sleep(2)
+def game_flow(brd, name)
+  decider = first_move_decision(name)
+  current_player = first_move(decider, name)
   loop do
     display_board(brd)
     place_piece!(brd, current_player)
@@ -204,10 +233,11 @@ def match_end(hsh, winner)
   five_wins
 end
 
+name = welcome.downcase
 win_count = Hash.new(0)
 loop do
   board = initialize_board
-  game_flow(board)
+  game_flow(board, name)
   display_board(board)
   winner = game_end(board, win_count)
   break if !!match_end(win_count, winner)
@@ -218,3 +248,20 @@ end
 prompt 'Thanks for playing TicTacToe.  Goodbye.'
 
 
+
+
+##############################################################
+# def row(dimension)
+#   brd = (1..9).zip(['X'] * 9).to_h
+#   cell = "        " + "|"
+#   cell_with_value = "   #{brd[1]}    " + "|"
+#   separator = "--------+"
+
+#   puts cell * dimension
+#   puts cell_with_value * dimension # each_with_index (use idx as key to brd hash)
+#   puts cell * dimension
+#   puts separator * dimension
+# end
+
+# row(3)
+# row(3)
