@@ -15,7 +15,7 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
-def clear(time = 1)
+def clear(time = 2)
   sleep(time)
   system('clear')
 end
@@ -54,11 +54,20 @@ def winning_lines_list(dimension)
   [rows, cols, diagonals]
 end
 
-# rubocop:disable Metrics/AbcSize
-def display_board(brd)
+def display_msg(name, current_player, move_count)
   clear(1)
   puts "You're #{PLAYER_MARKER}. Computer is #{COMPUTER_MARKER}."
-  # Add message for player here
+  if current_player == name_abbrev(name)
+    puts format(MESSAGES['moves']['player_count'],
+                { player: name, play_count: move_count })
+  else
+    puts format(MESSAGES['moves']['computer_count'], { play_count: move_count })
+  end
+end
+
+# rubocop:disable Metrics/AbcSize
+def display_board(brd, name, move_count, current_player, message = true)
+  display_msg(name, current_player, move_count) if message
   puts ""
   puts " 1    | 2      | 3"
   puts "   #{brd[1]}  |    #{brd[2]}   |  #{brd[3]}"
@@ -91,46 +100,59 @@ def joinor(arr, sep1 = ', ', sep2 = 'or')
   end
 end
 
+def name_abbrev(name)
+  name.downcase.start_with?('c') ? name[0..1].downcase : name[0].downcase
+end
+
 def first_move_decision(name)
   clear
   decider = ''
   loop do
     prompt format(MESSAGES['first_move_decision']['intro_msg'],
-                  { player_letter: name[0].downcase, player_name: name })
+                  { player_letter: name_abbrev(name), player_name: name })
     decider = gets.chomp.strip.downcase
-    break if valid_choice?(decider, name[0], 'c')
+    break if valid_choice?(decider, name_abbrev(name), 'c')
     prompt MESSAGES['first_move_decision']['error_msg']
     clear
   end
   decider
 end
 
+def computer_first_move_msg(first_move, name)
+  if first_move == name_abbrev(name)
+    prompt MESSAGES['first_move']['player']
+  else
+    prompt MESSAGES['first_move']['computer']
+  end
+  sleep(2)
+end
+
 def first_move(decider, name)
   clear
   first_move = ''
   loop do
-    if decider == name[0]
+    if decider == name_abbrev(name)
       prompt format(MESSAGES['first_move']['intro_msg'],
-                    { player_letter: name[0].downcase, player_name: name })
+                    { player_letter: name_abbrev(name), player_name: name })
       first_move = gets.chomp.strip.downcase
     else
-      first_move = [name[0], 'computer'].sample
-      first_move == name[0] ? MESSAGES['first_move']['player'] : MESSAGES['first_move']['computer']
+      first_move = [name_abbrev(name), 'c'].sample
+      computer_first_move_msg(first_move, name)
     end
-    break if valid_choice?(first_move, name[0], 'c')
+    break if valid_choice?(first_move, name_abbrev(name), 'c')
     prompt MESSAGES['first_move']['error_msg']
-    clear
   end
   first_move
 end
 
-def player_places_piece!(brd) # Destructive method
+def player_places_piece!(brd)
   square = ''
   loop do
-    prompt "Choose a square:  #{joinor(empty_squares(brd))}"
+    prompt format(MESSAGES['moves']['player_options'],
+                  { options: joinor(empty_squares(brd)) })
     square = gets.chomp.to_i
     break if empty_squares(brd).include?(square)
-    puts "Sorry.  That's not a valid choice."
+    puts format(MESSAGES['moves']['error_msg'], { selection: square })
   end
   brd[square] = PLAYER_MARKER
 end
@@ -158,27 +180,28 @@ def computer_places_piece!(brd)
   brd[square] = COMPUTER_MARKER
 end
 
-def place_piece!(brd, current_player)
+def place_piece!(brd, name, current_player)
   sleep(1)
-  if current_player == 'player'
+  if current_player == name_abbrev(name)
+    # puts format(MESSAGES['moves']['prev_move'], { selection: square })
     player_places_piece!(brd)
   else
     computer_places_piece!(brd)
   end
 end
 
-def alternate_player(current_player)
-  current_player == 'player' ? 'computer' : 'player'
+def alternate_player(name, current_player)
+  current_player == name_abbrev(name) ? 'computer' : name_abbrev(name)
 end
 
 def board_full?(brd)
   empty_squares(brd).empty?
 end
 
-def detect_winner(brd)
+def detect_winner(brd, name)
   WINNING_LINES.each do |line|
     if brd.values_at(*line).count(PLAYER_MARKER) == 3
-      return 'Player'
+      return name
     elsif brd.values_at(*line).count(COMPUTER_MARKER) == 3
       return 'Computer'
     end
@@ -186,8 +209,8 @@ def detect_winner(brd)
   nil
 end
 
-def someone_won?(brd)
-  !!detect_winner(brd)
+def someone_won?(brd, name)
+  !!detect_winner(brd, name)
 end
 
 def add_win(winner, hsh)
@@ -197,30 +220,37 @@ end
 def game_flow(brd, name)
   decider = first_move_decision(name)
   current_player = first_move(decider, name)
+  first_mover = current_player.clone
+  move_count = 1
   loop do
-    display_board(brd)
-    place_piece!(brd, current_player)
-    current_player = alternate_player(current_player)
-    break if someone_won?(brd) || board_full?(brd)
+    display_board(brd, name, move_count, current_player)
+    place_piece!(brd, name, current_player)
+    current_player = alternate_player(name, current_player)
+    move_count += 1 if current_player == first_mover
+    break if someone_won?(brd, name) || board_full?(brd)
   end
+  display_board(brd, name, move_count, current_player, false)
 end
 
-def game_end(brd, hsh)
-  if someone_won?(brd)
-    winner = detect_winner(brd)
-    prompt "#{winner} won!"
+def game_end(brd, name, hsh)
+  if someone_won?(brd, name)
+    winner = detect_winner(brd, name)
+    prompt format(MESSAGES['game_end']['winner'], { winner: winner })
     add_win(winner, hsh)
-    puts hsh.inspect
   else
-    prompt "it's a tie!"
+    prompt MESSAGES['game_end']['tie']
   end
+  prompt format(MESSAGES['game_end']['score'],
+                { game_count: 5, player: name,
+                  player_wins: hsh[name], computer_wins: hsh['Computer'] })
+  puts "\n\n"
   winner
 end
 
 def play_again
   again = ''
   loop do
-    prompt 'Play again? (y or n)'
+    prompt MESSAGES['game_end']['post_msg']
     again = gets.chomp.strip
     break if valid_choice?(again, 'y', 'n')
   end
@@ -233,21 +263,21 @@ def match_end(hsh, winner)
   five_wins
 end
 
-name = welcome.downcase
+name = welcome
 win_count = Hash.new(0)
 loop do
   board = initialize_board
   game_flow(board, name)
-  display_board(board)
-  winner = game_end(board, win_count)
+  # display_board(board, name)
+  clear(2)
+  winner = game_end(board, name, win_count)
   break if !!match_end(win_count, winner)
+
   again = play_again
   break unless again == 'y'
 end
 
 prompt 'Thanks for playing TicTacToe.  Goodbye.'
-
-
 
 
 ##############################################################

@@ -13,7 +13,7 @@ first_move_decision:
   error_msg: "Sorry, that is not a valid selection.  Please try again:"
   
 first_move:
-  intro_msg: 
+  intro_msg: |
     Choose who makes the first move
     '%{player_letter}' for %{player_name}
     'c' for Computer
@@ -21,13 +21,19 @@ first_move:
   computer: 'Computer decided to move first!'
   error_msg: "Sorry, that is not a valid selection.  Please try again:"
 
-loan_duration:
-  intro_msg: |
-    Please provide the loan duration in years and months separated by a space.
-    Example: 20 6 for 20 years and 6 months or 30 10 for 30 years and 10 months:
-  error_msg: "Sorry, that is not a valid loan duration.\nPlease provide the loan duration again:"
-  post_msg:  "Thank you. Please confirm that your loan duration is %{placeholder} years and %{placeholder2} months\n1) Yes\n2) No"
+moves:
+  computer_count: 'Computer move %{play_count}'
+  prev_move: The computer took square %{selection}
+  player_count: '%{player} move %{play_count}'
+  player_options: 'Choose a square from the list:  %{options}'
+  error_msg:  'Sorry, square %{selection} is not available.'
 
-monthly_payment:
-  intro_msg: "Thank you for using the Mortgage Loan Calculator.  Below is a summary of your mortgage loan details:"
-  post_msg: "Would you like to calculate another loan?\n1) Yes\n2) No"
+game_end:
+  winner: "%{winner} wins!\n\n"
+  tie: "It's a tie!\n\n"
+  score: |
+    The score after game %{game_count} is
+
+    %{player}: %{player_wins}
+    Computer: %{computer_wins}
+  post_msg: "Play again? (y or n)"
