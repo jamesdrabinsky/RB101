@@ -80,3 +80,18 @@
   ############################################################################
 
 # brd.keys.select { |k| brd[k] == INITIAL_MARKER }
+
+  ############################################################################
+
+name = welcome
+win_count = Hash.new(0)
+loop do
+  board = initialize_board
+  game_flow(board, name)
+  clear
+  winner = game_end(board, name, win_count)
+  break if !!match_end(win_count, winner)
+
+  again = play_again
+  break unless again == 'y'
+end

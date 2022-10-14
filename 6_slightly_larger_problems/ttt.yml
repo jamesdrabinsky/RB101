@@ -1,16 +1,18 @@
-intro_msg: "Before you start a new game of Tic Tac Toe, please enter name:"
+intro_msg: "Before you start a new game of Tic Tac Toe, please enter your name:"
 outro_msg: "Thanks %{placeholder}. Have a nice day!"
 
 name:
   error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
-  post_msg: "Thank you, %{player}.  Good luck!"
+  post_msg: |
+    Thank you, %{player}.  Welcome to Tic Tac Toe!
+    The first player to win 5 games wins the match.  Good luck!
 
 first_move_decision:
   intro_msg: |
     Do you want to choose who moves first or would you like to let the computer decide?
     '%{player_letter}' for %{player_name}
     'c' for Computer
-  error_msg: "Sorry, that is not a valid selection.  Please try again:"
+  error_msg: "Sorry, that is not a valid choice.  Please try again"
   
 first_move:
   intro_msg: |
@@ -19,7 +21,7 @@ first_move:
     'c' for Computer
   player: 'Computer is giving you the first move!'
   computer: 'Computer decided to move first!'
-  error_msg: "Sorry, that is not a valid selection.  Please try again:"
+  error_msg: "Sorry, that is not a valid choice.  Please try again"
 
 moves:
   computer_count: 'Computer move %{play_count}'
@@ -37,3 +39,11 @@ game_end:
     %{player}: %{player_wins}
     Computer: %{computer_wins}
   post_msg: "Play again? (y or n)"
+
+match_end:
+  early: |
+    Neither you or the computer have reached 5 wins.  There is no match winner.
+
+    Thanks for playing TicTacToe.  Goodbye.
+  end: "%{winner} is the first to 5 wins.  The match is over.  Thanks for playing!\n\n"
+  error_msg: 'Sorry, that is not a valid choice.  Please try again'
