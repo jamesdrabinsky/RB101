@@ -22,7 +22,7 @@ def initialize_deck
 end
 
 def deal_cards(deck)
-  [*deck.shift(4).each_slice(2)]
+  [*deck.pop(4).each_slice(2)]
 end
 
 def full_suits_and_values(hand)
@@ -32,7 +32,7 @@ def full_suits_and_values(hand)
 end
 
 # rubocop:disable Style/ConditionalAssignment
-def calculate_sum(cards, target = 21)
+def total(cards, target = 21)
   sum = cards.sum { |card| CARD_HASH.fetch(card[1], 0) }
   cards.count { |card| card[1] == 'A' }.times do
     if sum < (target - 10)
@@ -42,6 +42,19 @@ def calculate_sum(cards, target = 21)
     end
   end
   sum
+end
+
+def add_to_total(card, total, target = 21)
+  if card[1] == 'A'
+    if total < (target - 10)
+      total += 10
+    else
+      total += 1
+    end
+  else
+    total += CARD_HASH[card[1]]
+  end
+  total
 end
 # rubocop:enable Style/ConditionalAssignment
 
@@ -64,31 +77,35 @@ def bust?(hand_total)
   hand_total > 21
 end
 
-def hand_result(hand_total)
-  if bust?(hand_total)
-    -1
-  elsif hand_total == 21
-    1
-  end
+def detect_result(player_total, dealer_total)
+  results = {
+    player_21: player_total == 21,
+    dealer_21: dealer_total == 21,
+    player_busted: player_total > 21,
+    dealer_busted: dealer_total > 21,
+    player: dealer_total < player_total,
+    dealer: dealer_total > player_total
+  }
+  results.find(-> { [:tie, _] }) { |_, v| v }[0]
 end
 
-def detect_result
-  nil
+def display_result(player_total, dealer_total)
+  result = detect_result(player_total, dealer_total)
+  results = {
+    "You hit 21.  You win!\n" => :player_21,
+    "Dealer hit 21.  Dealer wins!\n" => :dealer_21,
+    "You busted! Dealer wins!\n" => :player_busted,
+    "Dealer busted! You win!\n" => :dealer_busted,
+    "You win!\n" => :player,
+    "Dealer wins!\n" => :dealer
+  }
+  puts results.find(-> { ["It's a tie\n", :tie] }) { |_, v| result == v }[0]
 end
 
-def display_result(result, player_dealer, total = nil)
-  opp = player_dealer == 'Player' ? 'Dealer' : 'Player'
-  if result == -1
-    puts "\n#{player_dealer}'s card total exceeds 21!\n#{player_dealer} busted! #{opp} wins!"
-  elsif result == 1
-    puts "\n#{player_dealer}'s card total is 21.  #{player_dealer} wins!"
-  else
-    puts "#{player_dealer} chose to stay at #{total}."
-  end
-end
+def game_tracker
 
 def player_turn(hand, deck)
-  sum = calculate_sum(hand)
+  sum = total(hand)
   loop do
     puts "Hit or stay?"
     move = gets.chomp.strip
@@ -97,34 +114,38 @@ def player_turn(hand, deck)
     clear_screen(2)
 
     hit!(hand, deck)
-    sum = calculate_sum(hand)
+    last_card = hand[-1]
+    sum = add_to_total(last_card, sum)
     display_hand(hand, 'player', sum)
     break if (bust?(sum)) || (sum == 21)
   end
-  [sum, hand_result(sum)]
+  sum
 end
 
 def dealer_turn(hand, deck)
-  sum = calculate_sum(hand)
+  sum = total(hand)
   loop do
     break if sum >= 17
-    puts "Dealer hit."
-    clear_screen(3)
+    puts "\nDealer hit."
+    clear_screen(2)
+
     hit!(hand, deck)
-    sum = calculate_sum(hand, 17)
+    last_card = hand[-1]
+    sum = add_to_total(last_card, sum, 17)
     display_hand(hand, 'dealer', sum)
   end
-  [sum, hand_result(sum)]
+  sum
 end
 
-def winning_hand(player_score, dealer_score)
-  if player_score > dealer_score
-    'Player wins!'
-  elsif player_score < dealer_score
-    'Dealer wins!'
-  else
-    "It's a tie!"
-  end
+def display_score(dealer_hand, player_hand, dealer_total, player_total,
+                  final = false)
+  clear_screen(2)
+  puts "============================"
+  puts ""
+  display_hand(dealer_hand, 'dealer', dealer_total)
+  display_hand(player_hand, 'player', player_total)
+  puts "============================\n\n"
+  puts display_result(player_total, dealer_total) if final
 end
 
 def play_again?
@@ -135,41 +156,47 @@ def play_again?
   answer.downcase.start_with?('y')
 end
 
+win_tracker = {}
 loop do
   system 'clear'
   deck = initialize_deck
   player_hand, dealer_hand = deal_cards(deck)
-  player_total = calculate_sum(player_hand)
+  player_total, dealer_total = [player_hand, dealer_hand].map do |hand|
+    total(hand)
+  end
   display_hand(dealer_hand, 'dealer', 0, true)
   display_hand(player_hand, 'player', player_total)
 
-  # Player's turn
-  player_total, player_res = player_turn(player_hand, deck)
-  display_result(player_res, 'Player', player_total)
-  sleep(2)
-  if !!player_res
+  player_total = player_turn(player_hand, deck)
+  display_score(dealer_hand, player_hand, dealer_total, player_total)
+  if [:player_21, :player_busted].include?(
+    detect_result(player_total, dealer_total)
+  )
+    display_result(player_total, dealer_total)
+    sleep(2)
     play_again? ? next : break
+  else
+    puts "You chose to stay at #{player_total}"
+    sleep(2)
   end
 
-  # Dealer's turn
-  puts "\nDealer's turn..."
-  clear_screen(2)
-  dealer_total, dealer_res = dealer_turn(dealer_hand, deck)
-  display_result(dealer_res, 'Dealer', dealer_total)
+  clear_screen(1)
+  puts "Dealer's turn...\n"
+  dealer_total = dealer_turn(dealer_hand, deck)
   sleep(2)
-  if !!dealer_res
+  display_score(dealer_hand, player_hand, dealer_total, player_total)
+  if [:dealer_21, :dealer_busted].include?(
+    detect_result(player_total, dealer_total)
+  )
+    display_result(player_total, dealer_total)
+    sleep(2)
     play_again? ? next : break
+  else
+    puts "Dealer chose to stay at #{dealer_total}"
+    sleep(2)
   end
 
-  # Determine winner
-  clear_screen(2)
-  puts "=============="
-  display_hand(dealer_hand, 'dealer', dealer_total)
-  display_hand(player_hand, 'player', player_total)
-  puts "==============\n\n"
-  puts winning_hand(player_total, dealer_total)
-
-  # Play again?
+  display_score(dealer_hand, player_hand, dealer_total, player_total, true)
   break unless play_again?
 end
 

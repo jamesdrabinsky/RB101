@@ -37,11 +37,12 @@ def busted?(cards)
 end
 
 # :tie, :dealer, :player, :dealer_busted, :player_busted
-def detect_result(dealer_cards, player_cards)
-  player_total = total(player_cards)
-  dealer_total = total(dealer_cards)
-
-  if player_total > 21
+def detect_result(player_total, dealer_total)
+  if player_total == 21
+    :player
+  elsif dealer_total == 21
+    :dealer
+  elsif player_total > 21
     :player_busted
   elsif dealer_total > 21
     :dealer_busted

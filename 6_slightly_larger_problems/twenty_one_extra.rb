@@ -33,13 +33,86 @@
 
   ##############################################################
 
-  def display_hand(cards, turn = 'player', start = false)
-    player = turn == 'player' ? 'Player' : 'Dealer'
+  # def display_hand(cards, turn = 'player', start = false)
+  #   player = turn == 'player' ? 'Player' : 'Dealer'
   
-    if start
-      puts "Player's hand is:\n\t#{cards[0].join("\n\t")}\n\n"
-      puts "Dealer's hand is:\n\t#{cards[1][0]}\n\t?\n\n"
-    else
-      puts "#{player}'s hand is:\n\t#{cards[0].join("\n\t")}\n\n"
-    end
-  end
+  #   if start
+  #     puts "Player's hand is:\n\t#{cards[0].join("\n\t")}\n\n"
+  #     puts "Dealer's hand is:\n\t#{cards[1][0]}\n\t?\n\n"
+  #   else
+  #     puts "#{player}'s hand is:\n\t#{cards[0].join("\n\t")}\n\n"
+  #   end
+  # end
+
+  ##############################################################
+
+  # def hand_result(hand_total)
+#   if bust?(hand_total)
+#     -1
+#   elsif hand_total == 21
+#     1
+#   end
+# end
+
+# def display_result(result, player_dealer, total = nil)
+#   opp = player_dealer == 'Player' ? 'Dealer' : 'Player'
+#   if result == -1
+#     puts "\n#{player_dealer}'s card total exceeds 21!\n#{player_dealer} busted! #{opp} wins!"
+#   elsif result == 1
+#     puts "\n#{player_dealer}'s card total is 21.  #{player_dealer} wins!"
+#   else
+#     puts "\n#{player_dealer} chose to stay at #{total}."
+#   end
+# end
+
+  ##############################################################
+
+# def display_winner(player_score, dealer_score)
+#   if player_score > dealer_score
+#     'Player wins!'
+#   elsif player_score < dealer_score
+#     'Dealer wins!'
+#   else
+#     "It's a tie!"
+#   end
+# end
+
+  ##############################################################
+
+
+#   if player_total == 21
+#     :player_21
+#   elsif dealer_total == 21
+#     :dealer_21
+#   elsif player_total > 21
+#     :player_busted
+#   elsif dealer_total > 21
+#     :dealer_busted
+#   elsif dealer_total < player_total
+#     :player
+#   elsif dealer_total > player_total
+#     :dealer
+#   else
+#     :tie
+#   end
+# end
+
+  ##############################################################
+
+#   case result
+#   when :player_21
+#     puts "You hit 21.  You win!\n"
+#   when :dealer_21
+#     puts "Dealer hit 21.  Dealer wins!\n"
+#   when :player_busted
+#     puts "You busted! Dealer wins!\n"
+#   when :dealer_busted
+#     puts "Dealer busted! You win!\n"
+#   when :player
+#     puts "You win!\n"
+#   when :dealer
+#     puts "Dealer wins!\n"
+#   when :tie
+#     puts "It's a tie!\n"
+#   end
+# end
