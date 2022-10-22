@@ -86,7 +86,7 @@ def detect_result(player_total, dealer_total)
     player: dealer_total < player_total,
     dealer: dealer_total > player_total
   }
-  results.find(-> { [:tie, _] }) { |_, v| v }[0]
+  results.find(-> { [:tie, ""] }) { |_, v| v }[0]
 end
 
 def display_result(player_total, dealer_total)
@@ -102,7 +102,15 @@ def display_result(player_total, dealer_total)
   puts results.find(-> { ["It's a tie\n", :tie] }) { |_, v| result == v }[0]
 end
 
-def game_tracker
+def record_result(result, hsh)
+  if %i(player_21 dealer_busted player).include?(result)
+    hsh[:player] += 1
+  elsif %i(dealer_21 player_busted dealer).include?(result)
+    hsh[:dealer] += 1
+  else
+    hsh[:tie] += 1
+  end
+end
 
 def player_turn(hand, deck)
   sum = total(hand)
@@ -148,6 +156,23 @@ def display_score(dealer_hand, player_hand, dealer_total, player_total,
   puts display_result(player_total, dealer_total) if final
 end
 
+def five_wins?(hsh)
+  hsh.reject { |k, _| k == :tie }.values.any? { |v| v == 5 }
+end
+
+def match_winner(hsh)
+  winner = hsh.reject { |k, _| k == :tie }.find { |_, v| v == 5 }[0]
+  winner == :player ? 'You are' : 'Dealer is'
+end
+
+def game_end_msg(hsh)
+  total = hsh.values.sum
+  games = total == 1 ? 'game' : 'games'
+  puts "After #{total} #{games} the score is:"
+  puts "Player: #{hsh.fetch(:player, 0)}"
+  puts "Dealer: #{hsh.fetch(:dealer, 0)}"
+end
+
 def play_again?
   puts ""
   puts "-------------"
@@ -156,8 +181,7 @@ def play_again?
   answer.downcase.start_with?('y')
 end
 
-win_tracker = {}
-loop do
+def start_game
   system 'clear'
   deck = initialize_deck
   player_hand, dealer_hand = deal_cards(deck)
@@ -166,13 +190,45 @@ loop do
   end
   display_hand(dealer_hand, 'dealer', 0, true)
   display_hand(player_hand, 'player', player_total)
+  [deck, [player_hand, dealer_hand], [player_total, dealer_total]]
+end
 
-  player_total = player_turn(player_hand, deck)
+# def take_turn(deck, player_hand, dealer_hand, player_total, dealer_total,
+#               hsh, *results)
+#   player_total = player_turn(player_hand, deck)
+#   display_score(dealer_hand, player_hand, dealer_total, player_total)
+#   result = detect_result(player_total, dealer_total)
+#   end_game = results.include?(result)
+#   if end_game
+#     display_result(player_total, dealer_total)
+#     record_result(result, hsh)
+#     sleep(2)
+#   end
+#   end_game
+# end
+
+game_tracker = Hash.new(0)
+loop do
+  game_info = start_game
+  deck = game_info[0]
+  player_hand, dealer_hand = game_info[1]
+  player_total, dealer_total = game_info[2]
+
+  # end_game = take_turn(deck, hands[0], hands[1], totals[0], totals[1],
+  #                      game_tracker, :player_21, :player_busted)
+
+  player_total = player_turn(player_total, deck)
   display_score(dealer_hand, player_hand, dealer_total, player_total)
-  if [:player_21, :player_busted].include?(
-    detect_result(player_total, dealer_total)
-  )
+  result = detect_result(player_total, dealer_total)
+  if [:player_21, :player_busted].include?(result)
     display_result(player_total, dealer_total)
+    record_result(result, game_tracker)
+    sleep(2)
+    if five_wins?(game_tracker)
+      puts "#{match_winner(game_tracker).capitalize} the first to five wins!"
+      break
+    end
+    game_end_msg(game_tracker)
     sleep(2)
     play_again? ? next : break
   else
@@ -185,10 +241,16 @@ loop do
   dealer_total = dealer_turn(dealer_hand, deck)
   sleep(2)
   display_score(dealer_hand, player_hand, dealer_total, player_total)
-  if [:dealer_21, :dealer_busted].include?(
-    detect_result(player_total, dealer_total)
-  )
+  result = detect_result(player_total, dealer_total)
+  if [:dealer_21, :dealer_busted].include?(result)
     display_result(player_total, dealer_total)
+    record_result(result, game_tracker)
+    sleep(2)
+    if five_wins?(game_tracker)
+      puts "#{match_winner(game_tracker).capitalize} is the first to five wins!"
+      break
+    end
+    game_end_msg(game_tracker)
     sleep(2)
     play_again? ? next : break
   else
@@ -196,7 +258,16 @@ loop do
     sleep(2)
   end
 
+  result = detect_result(player_total, dealer_total)
+  record_result(result, game_tracker)
   display_score(dealer_hand, player_hand, dealer_total, player_total, true)
+  if five_wins?(game_tracker)
+    puts "#{match_winner(game_tracker).capitalize} is the first to five wins!"
+    break
+  end
+  game_end_msg(game_tracker)
+  sleep(2)
+
   break unless play_again?
 end
 
