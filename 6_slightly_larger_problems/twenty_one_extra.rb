@@ -116,3 +116,24 @@
 #     puts "It's a tie!\n"
 #   end
 # end
+
+  ##############################################################
+
+# def take_turn(deck, player_hand, dealer_hand, player_total, dealer_total,
+#               hsh, *results)
+#   player_total = player_turn(player_hand, deck)
+#   display_score(dealer_hand, player_hand, dealer_total, player_total)
+#   result = detect_result(player_total, dealer_total)
+#   end_game = results.include?(result)
+#   if end_game
+#     display_result(player_total, dealer_total)
+#     record_result(result, hsh)
+#     sleep(2)
+#   end
+#   end_game
+# end
+
+  ##############################################################
+
+  # end_game = take_turn(deck, hands[0], hands[1], totals[0], totals[1],
+  #                      game_tracker, :player_21, :player_busted)

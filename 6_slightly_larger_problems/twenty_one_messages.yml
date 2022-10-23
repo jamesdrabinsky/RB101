@@ -1,0 +1,45 @@
+intro_msg: "Before you start a new game of Twenty-One, please enter your name:"
+outro_msg: |
+
+  Thank you for playing Twenty-One! Good bye!
+
+name:
+  error_msg: "Sorry, that is not a valid name value.\nPlease enter your name again:"
+  post_msg: |
+    Thank you, %{player}.  Welcome to a new game of Twenty-One!
+    
+    The goal of Twenty-One is to try to get as close to 21 as possible, without going over. If you go over 
+    21, it's a "bust" and you lose.
+  
+    The first player to win 5 games wins the match.  Good luck!
+
+display_hand:
+  start: |+
+    %{player}'s hand is:
+      %{cards}
+      ? 
+      
+  next: |+
+    %{player}'s hand is:
+      %{cards}
+  
+      For a total of: %{total}
+    
+game:
+  action: '(h)it or (s)tay?'
+  player_hit: "\nPlayer hit."
+  dealer_hit: "\nDealer hit."
+  error_msg: "Sorry, that is not a valid selection.  Please try again:"
+  end: |+
+    After %{total} %{games} the score is:
+
+      %{name}: %{player_wins}
+      Dealer: %{dealer_wins}
+
+  play_again: |+
+    Do you want to play again? ((y)es or (n)o)
+
+match:
+  end: |+
+  
+    %{winner} the first to five wins and wins the match!
