@@ -300,3 +300,6 @@ end
 #   end
 #   [rows, cols, diagonals]
 # end
+
+
+# https://www.youtube.com/watch?v=trKjYdBASyQ
